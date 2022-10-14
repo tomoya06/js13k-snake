@@ -1,0 +1,8 @@
+html,
+body {
+  background-color: #000000;
+}
+
+canvas#app {
+  border: 1px solid red;
+}
