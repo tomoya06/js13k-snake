@@ -1,20 +1,30 @@
-import kontra, { Sprite } from "kontra";
-
-let { init, GameLoop, onKey, initKeys } = kontra;
-
-type Pos = [number, number];
+import { Sprite, init, GameLoop, onKey, initKeys, movePoint } from "kontra";
+import { genRandomPos, Pos } from "./util";
 
 const canvasElem = document.getElementById("app") as HTMLCanvasElement;
-canvasElem.width = 800;
-canvasElem.height = 800;
-const boardBoarder = [800, 800];
+const boardSize: Pos = [20, 20];
+canvasElem.width = boardSize[0] * 10;
+canvasElem.height = boardSize[1] * 10;
+const boardBoarder = [boardSize[0] * 10, boardSize[1] * 10];
+
+// 这一行要放在最上层
+init(canvasElem);
 
 const cells: Sprite[] = [];
 let headDirection: number = 1; // 0up 1right 2bottom 3left
 let isDirectionChangeConsumed = true;
 let updateCnt = 0;
 
-let speed = 0.5;
+let speed = 0.1;
+let moveSpeed = 10;
+
+const appleSprite = Sprite({
+  x: 0,
+  y: 0,
+  color: "green",
+  width: 10,
+  height: 10,
+});
 
 function grow(dpos?: Pos) {
   let pos: Pos;
@@ -38,30 +48,30 @@ function genNextPos(): Pos {
   const nextPos: Pos = [cells[0].x, cells[0].y];
   switch (headDirection) {
     case 0:
-      nextPos[1] -= 10;
+      nextPos[1] -= moveSpeed;
       break;
     case 1:
-      nextPos[0] += 10;
+      nextPos[0] += moveSpeed;
       break;
     case 2:
-      nextPos[1] += 10;
+      nextPos[1] += moveSpeed;
       break;
     case 3:
-      nextPos[0] -= 10;
+      nextPos[0] -= moveSpeed;
       break;
     default:
       break;
   }
-  if (nextPos[0] > boardBoarder[0]) {
+  if (nextPos[0] > boardBoarder[0] - 10) {
     nextPos[0] = 0;
   } else if (nextPos[0] < 0) {
-    nextPos[0] = boardBoarder[0];
+    nextPos[0] = boardBoarder[0] - 10;
   }
 
-  if (nextPos[1] > boardBoarder[1]) {
+  if (nextPos[1] > boardBoarder[1] - 10) {
     nextPos[1] = 0;
   } else if (nextPos[1] < 0) {
-    nextPos[1] = boardBoarder[1];
+    nextPos[1] = boardBoarder[1] - 10;
   }
 
   return nextPos;
@@ -122,6 +132,11 @@ onKey("s", () => {
 function move() {
   const nextPos = genNextPos();
 
+  if (nextPos[0] === appleSprite.x && nextPos[1] === appleSprite.y) {
+    grow();
+    genApple();
+  }
+
   const tail = cells.pop()!;
   tail.x = nextPos[0];
   tail.y = nextPos[1];
@@ -130,7 +145,27 @@ function move() {
   isDirectionChangeConsumed = true;
 }
 
-function update(dt: number) {
+function updateSnakeColor() {
+  let headPos = "";
+  const visited = new Set([""]);
+  for (let idx = 0; idx <= cells.length - 1; idx++) {
+    const cell = cells[idx];
+    const myPos = `${cell.x},${cell.y}`;
+    if (idx === 0 || myPos === headPos) {
+      cell.color = "#ff7d7d";
+      headPos = myPos;
+      continue;
+    }
+    if (visited.has(myPos)) {
+      cell.color = "#a10000";
+    } else {
+      cell.color = "red";
+    }
+    visited.add(myPos);
+  }
+}
+
+function updateSnake(dt: number) {
   updateCnt += dt;
   if (updateCnt < speed) {
     return;
@@ -138,27 +173,52 @@ function update(dt: number) {
   updateCnt = 0;
 
   move();
+  updateSnakeColor();
 }
 
-init(canvasElem);
-initKeys();
+function pickEmptyPos(): Pos {
+  const cellPosKeys = new Set(
+    cells.map((cell) => {
+      return `${Math.floor(cell.x / 10)},${Math.floor(cell.y / 10)}`;
+    })
+  );
 
-for (let i = 0; i < 3; i++) {
+  while (true) {
+    const newPos = genRandomPos(boardSize[0], boardSize[1]);
+    if (cellPosKeys.has(`${newPos[0]},${newPos[1]}`)) {
+      continue;
+    }
+
+    return [newPos[0] * 10, newPos[1] * 10];
+  }
+}
+
+function genApple() {
+  const newPos = pickEmptyPos();
+  appleSprite.x = newPos[0];
+  appleSprite.y = newPos[1];
+}
+
+initKeys();
+for (let i = 0; i < 20; i++) {
   grow([0, 0]);
 }
+genApple();
 
 let loop = GameLoop({
   update: function (dt) {
     cells.forEach((cell) => {
       cell.update();
     });
+    appleSprite.update();
 
-    update(dt);
+    updateSnake(dt);
   },
   render: function () {
     cells.forEach((cell) => {
       cell.render();
     });
+    appleSprite.render();
   },
 });
 
