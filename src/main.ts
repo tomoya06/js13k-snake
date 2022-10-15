@@ -9,7 +9,7 @@ import {
 } from "kontra";
 import { genRandomPos, Pos } from "./util";
 
-const canvasElem = document.getElementById("app") as HTMLCanvasElement;
+const canvasElem = document.getElementById("game") as HTMLCanvasElement;
 const boardSize: Pos = [20, 20];
 canvasElem.width = boardSize[0] * 10;
 canvasElem.height = boardSize[1] * 10;
@@ -35,6 +35,14 @@ const appleSprite = Sprite({
   width: 10,
   height: 10,
 });
+
+function updateScore() {
+  const text = `
+  SCORE: ${cells.length}
+  SPEED: ${Math.floor(10 / speed)}
+  `;
+  document.getElementById("score")!.innerText = text;
+}
 
 function grow(dpos?: Pos) {
   let pos: Pos;
@@ -135,6 +143,18 @@ function handleDown() {
   isDirectionChangeConsumed = false;
 }
 
+function speedUp() {
+  speed = Math.max(0.02, speed - 0.02);
+
+  updateScore();
+}
+
+function speedDown() {
+  speed = Math.min(0.18, speed + 0.02);
+
+  updateScore();
+}
+
 onKey("g", () => {
   grow();
 });
@@ -142,6 +162,20 @@ onInput(["a", "swipeleft"], handleLeft);
 onInput(["d", "swiperight"], handleRight);
 onInput(["w", "swipeup"], handleUp);
 onInput(["s", "swipedown"], handleDown);
+document.getElementById("btn-up")!.onclick = handleUp;
+document.getElementById("btn-left")!.onclick = handleLeft;
+document.getElementById("btn-right")!.onclick = handleRight;
+document.getElementById("btn-down")!.onclick = handleDown;
+document.getElementById("btn-speedup")!.onclick = speedUp;
+document.getElementById("btn-speeddown")!.onclick = speedDown;
+
+(
+  [].slice.call(document.getElementsByTagName("button")) as HTMLButtonElement[]
+).forEach((elem) =>
+  elem.addEventListener("click", (e) => {
+    e.preventDefault();
+  })
+);
 
 function move() {
   const nextPos = genNextPos();
@@ -211,9 +245,11 @@ function genApple() {
   const newPos = pickEmptyPos();
   appleSprite.x = newPos[0];
   appleSprite.y = newPos[1];
+
+  updateScore();
 }
 
-for (let i = 0; i < 20; i++) {
+for (let i = 0; i < 3; i++) {
   grow([0, 0]);
 }
 genApple();

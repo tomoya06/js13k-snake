@@ -3,15 +3,32 @@
 
 <head>
   <meta charset="UTF-8" />
-  <link rel="icon" type="image/svg+xml" href="/vite.svg" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link rel="icon" type="image/x-icon" href="/favicon.ico" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
   <link rel="stylesheet" href="/src/index.css">
-  <title>Vite + TS</title>
+  <title>Nonstop Snake</title>
 </head>
 
 <body>
-  <canvas id="app"></canvas>
+  <div id="app">
+    <canvas id="game"></canvas>
+    <div id="score"></div>
+
+    <div id="control">
+      <div class="direction">
+        <button class="btn" id="btn-up">↑</button>
+        <button class="btn" id="btn-left">←</button>
+        <button class="btn" id="btn-right">→</button>
+        <button class="btn" id="btn-down">↓</button>
+      </div>
+      <div class="menu">
+        <button class="btn" id="btn-speedup">+</button>
+        <button class="btn" id="btn-speeddown">-</button>
+      </div>
+    </div>
+  </div>
   <script type="module" src="/src/main.ts"></script>
+  <script type="module" src="/src/window.ts"></script>
 </body>
 
 </html>

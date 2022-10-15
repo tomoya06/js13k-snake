@@ -1,8 +1,83 @@
 html,
 body {
   background-color: #000000;
+  position: relative;
+  height: 100%;
+  margin: 0;
+  padding: 0;
 }
 
-canvas#app {
+#score {
+  color: #ffffff;
+}
+
+canvas#game {
+  position: absolute;
+  left: 50%;
+  top: 20px;
+  transform: translateX(-50%);
   border: 1px solid red;
+}
+
+#control {
+  width: 100%;
+  position: absolute;
+  bottom: 20px;
+  display: flex;
+  justify-content: space-between;
+}
+
+.direction {
+  width: 150px;
+  height: 150px;
+  position: relative;
+  border: 1px solid blue;
+}
+
+#btn-up {
+  top: 0;
+  left: 50px;
+}
+#btn-left {
+  top: 50px;
+  left: 10px;
+}
+#btn-right {
+  top: 50px;
+  right: 10px;
+}
+#btn-down {
+  bottom: 0;
+  left: 50px;
+}
+
+.menu {
+  position: relative;
+  width: 150px;
+  height: 150px;
+  border: 1px solid blue;
+}
+
+#btn-speedup {
+  top: 20px;
+  left: 20px;
+}
+
+#btn-speeddown {
+  bottom: 20px;
+  right: 20px;
+}
+
+.btn {
+  position: absolute;
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  font-size: 20px;
+  padding: 0;
+  background-color: #f1f1f1;
+}
+
+.btn:active {
+  background-color: #6a6a6a;
 }
