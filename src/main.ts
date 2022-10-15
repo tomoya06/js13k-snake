@@ -231,6 +231,12 @@ function pickEmptyPos(): Pos {
     })
   );
 
+  if (cellPosKeys.size === boardSize[0] * boardSize[1]) {
+    loop.stop();
+    alert("Sorry but you must stop now");
+    return [0, 0];
+  }
+
   while (true) {
     const newPos = genRandomPos(boardSize[0], boardSize[1]);
     if (cellPosKeys.has(`${newPos[0]},${newPos[1]}`)) {

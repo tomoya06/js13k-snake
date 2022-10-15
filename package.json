@@ -6,9 +6,12 @@
   "scripts": {
     "dev": "vite",
     "build": "tsc && vite build",
-    "preview": "vite preview"
+    "buildgh": "tsc && vite build --mode=github",
+    "preview": "vite preview",
+    "ghpages": "pnpm run buildgh && gh-pages -d dist"
   },
   "devDependencies": {
+    "gh-pages": "^4.0.0",
     "typescript": "^4.6.4",
     "vite": "^3.1.0"
   },
