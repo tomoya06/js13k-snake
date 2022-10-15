@@ -1,4 +1,12 @@
-import { Sprite, init, GameLoop, onKey, initKeys, movePoint } from "kontra";
+import {
+  Sprite,
+  init,
+  GameLoop,
+  onKey,
+  initKeys,
+  onInput,
+  initInput,
+} from "kontra";
 import { genRandomPos, Pos } from "./util";
 
 const canvasElem = document.getElementById("app") as HTMLCanvasElement;
@@ -9,6 +17,8 @@ const boardBoarder = [boardSize[0] * 10, boardSize[1] * 10];
 
 // 这一行要放在最上层
 init(canvasElem);
+initKeys();
+initInput();
 
 const cells: Sprite[] = [];
 let headDirection: number = 1; // 0up 1right 2bottom 3left
@@ -77,11 +87,7 @@ function genNextPos(): Pos {
   return nextPos;
 }
 
-onKey("g", () => {
-  grow();
-});
-
-onKey("a", () => {
+function handleLeft() {
   if (
     headDirection === 3 ||
     headDirection === 1 ||
@@ -91,9 +97,9 @@ onKey("a", () => {
   }
   headDirection = 3;
   isDirectionChangeConsumed = false;
-});
+}
 
-onKey("d", () => {
+function handleRight() {
   if (
     headDirection === 3 ||
     headDirection === 1 ||
@@ -103,9 +109,9 @@ onKey("d", () => {
   }
   headDirection = 1;
   isDirectionChangeConsumed = false;
-});
+}
 
-onKey("w", () => {
+function handleUp() {
   if (
     headDirection === 0 ||
     headDirection === 2 ||
@@ -115,9 +121,9 @@ onKey("w", () => {
   }
   headDirection = 0;
   isDirectionChangeConsumed = false;
-});
+}
 
-onKey("s", () => {
+function handleDown() {
   if (
     headDirection === 0 ||
     headDirection === 2 ||
@@ -127,7 +133,15 @@ onKey("s", () => {
   }
   headDirection = 2;
   isDirectionChangeConsumed = false;
+}
+
+onKey("g", () => {
+  grow();
 });
+onInput(["a", "swipeleft"], handleLeft);
+onInput(["d", "swiperight"], handleRight);
+onInput(["w", "swipeup"], handleUp);
+onInput(["s", "swipedown"], handleDown);
 
 function move() {
   const nextPos = genNextPos();
@@ -199,7 +213,6 @@ function genApple() {
   appleSprite.y = newPos[1];
 }
 
-initKeys();
 for (let i = 0; i < 20; i++) {
   grow([0, 0]);
 }
